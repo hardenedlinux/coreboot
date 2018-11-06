@@ -73,3 +73,25 @@ config RISCV_USE_ARCH_TIMER
 
 config RISCV_WORKING_HARTID
 	int
+
+config RISCV_PAYLOAD_MODE
+	int
+	default 0 if RISCV_PAYLOAD_U_MODE
+	default 1 if RISCV_PAYLOAD_S_MODE
+	default 3 if RISCV_PAYLOAD_M_MODE
+
+choice
+	prompt "Privilege level for payload"
+	default RISCV_PAYLOAD_S_MODE
+
+config RISCV_PAYLOAD_U_MODE
+	bool "Payload running in u-mode"
+
+
+config RISCV_PAYLOAD_S_MODE
+	bool "Payload running in s-mode"
+
+config RISCV_PAYLOAD_M_MODE
+	bool "Payload running in m-mode"
+
+endchoice
