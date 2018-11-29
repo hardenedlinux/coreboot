@@ -84,8 +84,10 @@ struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = lb_last_record(header);
-	if (header->table_entries)
+	if (header->table_entries) {
+		rec->size = ALIGN_UP(rec->size, 8);
 		header->table_bytes += rec->size;
+	}
 	rec = lb_last_record(header);
 	header->table_entries++;
 	rec->tag = LB_TAG_UNUSED;
@@ -358,9 +360,9 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;
 
-	mainboard->size = ALIGN_UP(sizeof(*mainboard) +
+	mainboard->size = sizeof(*mainboard) +
 		strlen(mainboard_vendor) + 1 +
-		strlen(mainboard_part_number) + 1, 8);
+		strlen(mainboard_part_number) + 1;
 
 	mainboard->vendor_idx = 0;
 	mainboard->part_number_idx = strlen(mainboard_vendor) + 1;
@@ -411,7 +413,7 @@ static void lb_strings(struct lb_header *header)
 		rec = (struct lb_string *)lb_new_record(header);
 		len = strlen(strings[i].string);
 		rec->tag = strings[i].tag;
-		rec->size = ALIGN_UP(sizeof(*rec) + len + 1, 8);
+		rec->size = sizeof(*rec) + len + 1;
 		memcpy(rec->string, strings[i].string, len+1);
 	}
 
