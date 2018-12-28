@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google, Inc.
+ * Copyright (C) 2018 HardenedLinux
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,38 +13,15 @@
  * GNU General Public License for more details.
  */
 
-#include <cbmem.h>
-#include <console/console.h>
-#include <console/streams.h>
-#include <console/uart.h>
-#include <program_loading.h>
+#include <soc/addressmap.h>
+#include <soc/spi.h>
+#include <soc/spi_flash.h>
 #include <soc/clock.h>
-#include <soc/sdram.h>
 
 extern void flash_init(void);
+extern void bootblock_mainboard_init(void);
 
-void main(void)
+void bootblock_mainboard_init(void)
 {
-	console_init();
-
-	/* TODO: Follow Section 6.3 (FSBL) of the FU540 manual */
-
-	/*
-	 * Flush console before changing clock/UART divisor to prevent garbage
-	 * being printed.
-	 */
-	console_tx_flush();
-
-	clock_init();
-
-	// re-initialize UART
-	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
-		uart_init(CONFIG_UART_FOR_CONSOLE);
-
 	flash_init();
-	sdram_init();
-
-	cbmem_initialize_empty();
-
-	run_ramstage();
 }
