@@ -12,11 +12,17 @@
 # GNU General Public License for more details.
 
 bootblock-y += memlayout.ld
+bootblock-y += flash.c
+bootblock-y += media.c
 
 romstage-y += memlayout.ld
 romstage-y += romstage.c
+romstage-y += flash.c
+romstage-y += media.c
 
 ramstage-y += memlayout.ld
+ramstage-y += flash.c
+ramstage-y += media.c
 ramstage-y += fixup_fdt.c
 
 

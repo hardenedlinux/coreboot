@@ -14,6 +14,7 @@
  */
 
 #include <boot_device.h>
+#include "flash.h"
 
 /* At 0x20000000: A 256MiB long memory-mapped view of the flash at QSPI0 */
 static struct mem_region_device mdev =
@@ -22,4 +23,9 @@ static struct mem_region_device mdev =
 const struct region_device *boot_device_ro(void)
 {
 	return &mdev.rdev;
+}
+
+void boot_device_init(void)
+{
+	flash_init();
 }
