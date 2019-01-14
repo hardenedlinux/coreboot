@@ -11,12 +11,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+bootblock-y += memlayout.ld
 bootblock-y += flash.c
-bootblock-y += bootblock.c
+bootblock-y += media.c
 
+romstage-y += memlayout.ld
 romstage-y += flash.c
+romstage-y += media.c
 romstage-y += romstage.c
 
-bootblock-y += memlayout.ld
-romstage-y += memlayout.ld
 ramstage-y += memlayout.ld
+ramstage-y += flash.c
+ramstage-y += media.c

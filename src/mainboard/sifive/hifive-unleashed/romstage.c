@@ -21,8 +21,6 @@
 #include <soc/clock.h>
 #include <soc/sdram.h>
 
-extern void flash_init(void);
-
 void main(void)
 {
 	console_init();
@@ -41,7 +39,6 @@ void main(void)
 	if (IS_ENABLED(CONFIG_CONSOLE_SERIAL))
 		uart_init(CONFIG_UART_FOR_CONSOLE);
 
-	flash_init();
 	sdram_init();
 
 	cbmem_initialize_empty();
