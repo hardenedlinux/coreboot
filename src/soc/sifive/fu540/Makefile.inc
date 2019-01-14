@@ -19,6 +19,7 @@ bootblock-y += bootblock.c
 bootblock-y += clock.c
 bootblock-y += spi.c
 bootblock-y += spi_flash.c
+bootblock-y += sd.c
 
 romstage-y += uart.c
 romstage-y += clint.c
@@ -28,6 +29,7 @@ romstage-y += otp.c
 romstage-y += clock.c
 romstage-y += spi.c
 romstage-y += spi_flash.c
+romstage-y += sd.c
 
 ramstage-y += uart.c
 ramstage-y += clint.c
@@ -37,6 +39,7 @@ ramstage-y += otp.c
 ramstage-y += clock.c
 ramstage-y += spi.c
 ramstage-y += spi_flash.c
+ramstage-y += sd.c
 
 CPPFLAGS_common += -Isrc/soc/sifive/fu540/include
 
