@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2013 Google, Inc.
+ * Copyright (C) 2019 HardenedLinux
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +21,36 @@
 #include <program_loading.h>
 #include <soc/clock.h>
 #include <soc/sdram.h>
+#include <mcall.h>
+#include <fdt.h>
+#include <string.h>
+#include <symbols.h>
+#include <cbfs.h>
+#include <soc/otp.h>
+
+static void update_dtb(void)
+{
+	uintptr_t dtb_maskrom = (uintptr_t)cbfs_boot_map_with_leak(
+		"fallback/DTB", CBFS_TYPE_RAW, NULL);
+	uint32_t  dtb_size = fdt_size(dtb_maskrom);
+	uintptr_t dtb_target = (uintptr_t)cbmem_add(CBMEM_ID_DEVICETREE,
+		dtb_size);
+
+	memcpy((void *)dtb_target, (void *)dtb_maskrom, dtb_size);
+	fdt_reduce_mem(dtb_target, sdram_size_mb() * 1024 * 1024);
+
+	uint32_t serial = otp_read_serial();
+	unsigned char mac[6] = { 0x70, 0xb3, 0xd5, 0x92, 0xf0, 0x00 };
+	if (serial != ~0) {
+		mac[5] |= (serial >>  0) & 0xff;
+		mac[4] |= (serial >>  8) & 0xff;
+		mac[3] |= (serial >> 16) & 0xff;
+	}
+	fdt_set_prop(dtb_target, "local-mac-address", &mac[0]);
+
+	for (int i = 0; i < CONFIG_MAX_CPUS; i++)
+		OTHER_HLS(i)->fdt = (void *)dtb_target;
+}
 
 void main(void)
 {
@@ -42,6 +73,8 @@ void main(void)
 	sdram_init();
 
 	cbmem_initialize_empty();
+
+	update_dtb();
 
 	run_ramstage();
 }
