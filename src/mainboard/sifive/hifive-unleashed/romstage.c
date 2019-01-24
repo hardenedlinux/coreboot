@@ -27,6 +27,7 @@
 #include <symbols.h>
 #include <cbfs.h>
 #include <soc/otp.h>
+#include <soc/addressmap.h>
 
 static void update_dtb(void)
 {
@@ -52,6 +53,30 @@ static void update_dtb(void)
 		OTHER_HLS(i)->fdt = (void *)dtb_target;
 }
 
+static void nsleep(long nsec)
+{
+	long setp = 600;
+	while (*(volatile long *)&nsec > 0)
+		*(volatile long *)&nsec -= setp;
+}
+
+#define GPIO_REG(n) (*(uint32_t *)(FU540_GPIO + (n)))
+#define GPIO_OUTPUT_EN  0x08
+#define GPIO_OUTPUT_VAL 0x0c
+
+static void phy_init(void)
+{
+#define PHY_NRESET 0x1000
+	nsleep(2000000);
+	__sync_fetch_and_or(&GPIO_REG(GPIO_OUTPUT_VAL),  PHY_NRESET);
+	__sync_fetch_and_or(&GPIO_REG(GPIO_OUTPUT_EN),   PHY_NRESET);
+	nsleep(100);
+	__sync_fetch_and_and(&GPIO_REG(GPIO_OUTPUT_VAL), ~PHY_NRESET);
+	nsleep(100);
+	__sync_fetch_and_or(&GPIO_REG(GPIO_OUTPUT_VAL),  PHY_NRESET);
+	nsleep(15000000);
+}
+
 void main(void)
 {
 	console_init();
@@ -71,6 +96,7 @@ void main(void)
 		uart_init(CONFIG_UART_FOR_CONSOLE);
 
 	sdram_init();
+	phy_init();
 
 	cbmem_initialize_empty();
 
