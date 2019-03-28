@@ -28,6 +28,18 @@ config PAYLOAD_ELF
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
+config PAYLOAD_RISCV_LINUX_BINARY
+	bool "An linux binary payload"
+	depends on ARCH_RISCV
+	help
+	  Select this option if you have a payload image (an binary file)
+	  which coreboot should run as soon as the basic hardware
+	  initialization is completed. This image will be used as the
+	  payload of opensbi and will be started by coreboot.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
 config PAYLOAD_FIT
 	bool "A FIT payload"
 	depends on ARCH_ARM64
@@ -57,9 +69,10 @@ source "payloads/bayou/Kconfig"
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
-	depends on PAYLOAD_ELF || PAYLOAD_FIT
+	depends on PAYLOAD_ELF || PAYLOAD_FIT || PAYLOAD_RISCV_LINUX_BINARY
 	default "payload.elf" if PAYLOAD_ELF
 	default "uImage" if PAYLOAD_FIT
+	default "payload.bin" if PAYLOAD_RISCV_LINUX_BINARY
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
