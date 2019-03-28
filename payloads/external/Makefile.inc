@@ -48,7 +48,11 @@ ifneq ($(strip $(call strip_quotes,$(CONFIG_PAYLOAD_OPTIONS))),)
 endif
 
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/payload
+ifeq ($(CONFIG_PAYLOAD_RISCV_LINUX_BINARY),y)
+$(CONFIG_CBFS_PREFIX)/payload-file := $(obj)/opensbi.elf
+else
 $(CONFIG_CBFS_PREFIX)/payload-file := $(CONFIG_PAYLOAD_FILE)
+endif
 ifeq ($(CONFIG_PAYLOAD_IS_FLAT_BINARY),y)
 $(CONFIG_CBFS_PREFIX)/payload-type := flat-binary
 else

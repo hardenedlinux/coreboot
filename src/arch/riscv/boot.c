@@ -49,7 +49,11 @@ static void do_arch_prog_run(struct prog *prog)
 		fdt = HLS()->fdt;
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
+#if CONFIG(PAYLOAD_RISCV_LINUX_BINARY)
+		run_payload(prog, fdt, RISCV_PAYLOAD_MODE_M);
+#else
 		run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
+#endif
 		return;
 	}
 

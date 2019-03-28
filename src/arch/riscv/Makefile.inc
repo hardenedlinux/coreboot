@@ -174,4 +174,27 @@ LDFLAGS_ramstage += -m elf32lriscv
 endif #CONFIG_ARCH_RISCV_RV32
 
 endif #CONFIG_ARCH_RAMSTAGE_RISCV
+
+ifeq ($(CONFIG_PAYLOAD_RISCV_LINUX_BINARY),y)
+
+OPENSBI := $(obj)/opensbi.elf
+OPENSBI_SOURCE := $(top)/payloads/external/opensbi
+OPENSBI_BUILD  := $(abspath $(obj)/payloads/external/opensbi)
+OPENSBI_TARGET := $(OPENSBI_BUILD)/platform/$(CONFIG_OPENSBI_PLATFORM)/firmware/fw_payload.elf
+
+$(OPENSBI):$(obj)/build.h
+	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	mkdir -p $(OPENSBI_BUILD)
+	$(MAKE) \
+		-C $(OPENSBI_SOURCE) \
+		CROSS_COMPILE=riscv64-elf- \
+		PLATFORM=$(CONFIG_OPENSBI_PLATFORM) \
+		O=$(OPENSBI_BUILD) \
+		FW_PAYLOAD_PATH=$(abspath $(CONFIG_PAYLOAD_FILE))
+	cp $(OPENSBI_TARGET) $(abspath $@)
+
+.PHONY: $(OPENSBI)
+
+endif #CONFIG_PAYLOAD_RISCV_LINUX_BINARY
+
 endif #CONFIG_ARCH_RISCV
