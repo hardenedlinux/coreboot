@@ -69,6 +69,7 @@ class GUID(uuid.UUID):
 DUMMY_GUID_DISK_UNIQUE = GUID('17145242-abaa-441d-916a-3f26c970aba2')
 DUMMY_GUID_PART_UNIQUE = GUID('7552133d-c8de-4a20-924c-0e85f5ea81f2')
 GUID_TYPE_FSBL = GUID('5B193300-FC78-40CD-8002-E86C45580B47')
+GUID_TYPE_GPTL = GUID('4750544c-0000-0000-0000-524953432d56')
 
 
 # A GPT disk header
@@ -153,6 +154,11 @@ class GPTImage:
         self.partitions[0].first_lba = self.header.first_usable_lba
         self.partitions[0].last_lba = \
             self.header.first_usable_lba + bootblock_size // BLOCK_SIZE
+
+        self.partitions[1].type = GUID_TYPE_GPTL
+        self.partitions[1].uniq = DUMMY_GUID_PART_UNIQUE
+        self.partitions[1].first_lba = self.partitions[0].first_lba + 64 * 1024 * 1024 // BLOCK_SIZE
+        self.partitions[1].last_lba = self.partitions[1].first_lba + 100 * 1024 * 1024 // BLOCK_SIZE
 
         # Calculate the CRC32 checksum of the partitions array
         partition_array = io.BytesIO()
